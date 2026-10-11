@@ -23,7 +23,6 @@ import {
   Sparkles,
   Sunrise,
   Trophy,
-  Users,
   X,
   type LucideIcon,
 } from "lucide-react";
