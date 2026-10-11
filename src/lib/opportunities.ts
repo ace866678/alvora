@@ -2,7 +2,7 @@ import {
   collection,
   doc,
   onSnapshot,
-  orderBy,
+  where,
   query,
   setDoc,
   deleteDoc,
@@ -42,10 +42,18 @@ export function subscribeToOpportunities(
   onData: (items: OpportunityRecord[]) => void,
   onError?: (error: Error) => void,
 ): Unsubscribe {
-  const listingsQuery = query(collection(requireDb(), "opportunities"), orderBy("title"));
+  // Keep the query aligned with the public-read Firestore rule: only open and unverified listings.
+  const listingsQuery = query(
+    collection(requireDb(), "opportunities"),
+    where("status", "in", ["open", "unverified"]),
+  );
   return onSnapshot(
     listingsQuery,
-    (snapshot) => onData(snapshot.docs.map((item) => ({ id: item.id, ...item.data() }) as OpportunityRecord)),
+    (snapshot) => {
+      const records = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }) as OpportunityRecord);
+      records.sort((a, b) => a.title.localeCompare(b.title));
+      onData(records);
+    },
     (error) => onError?.(error),
   );
 }
