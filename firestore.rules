@@ -13,9 +13,10 @@ service cloud.firestore {
       return signedIn() && request.auth.token.admin == true;
     }
 
-    // Published opportunities are readable by everyone. Only trusted admins may write.
+    // Only open or unverified opportunity records are publicly readable.
+    // Listing writes are restricted to trusted admins with a custom claim.
     match /opportunities/{opportunityId} {
-      allow read: if true;
+      allow read: if resource.data.status in ["open", "unverified"];
       allow create, update, delete: if isAdmin();
     }
 
