@@ -3,6 +3,7 @@ import {
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
+  sendPasswordResetEmail,
   signOut,
   type User,
 } from "firebase/auth";
@@ -22,6 +23,7 @@ export const signInWithEmail = (email: string, password: string) =>
   signInWithEmailAndPassword(requireAuth(), email, password);
 export const createEmailAccount = (email: string, password: string) =>
   createUserWithEmailAndPassword(requireAuth(), email, password);
+export const sendPasswordReset = (email: string) => sendPasswordResetEmail(requireAuth(), email.trim());
 export const signOutUser = () => signOut(requireAuth());
 
 export type AlvoraUser = User;
