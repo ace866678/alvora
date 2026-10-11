@@ -61,3 +61,34 @@ Early development prototype. No authentication, backend persistence, or live opp
 ## Preview branch
 
 This branch is reserved for safe preview testing. Production remains on `main`.
+
+
+## Phase 2 — Firebase foundation
+
+Firebase SDK scaffolding is now included on the preview branch. The dashboard continues to run in demo mode until a Firebase project is configured; no credentials are committed.
+
+### Firebase setup
+
+1. Open the [Firebase Console](https://console.firebase.google.com/) and create a project for Alvora.
+2. In **Project settings → General**, add a **Web app** and copy its web configuration values.
+3. Under **Authentication → Sign-in method**, enable **Google** and **Email/Password**. Add your Vercel preview and production hostnames under **Authentication → Settings → Authorized domains**.
+4. Create a **Cloud Firestore** database. Review and publish the rules in `firestore.rules`; opportunity writes are restricted to accounts with the Firebase custom claim `admin: true`.
+5. Copy `.env.example` to `.env.local` for local development and fill in the `VITE_FIREBASE_*` values.
+6. In Vercel → **Project Settings → Environment Variables**, add the same `VITE_FIREBASE_*` values for **Preview** and **Production** as appropriate. Redeploy the preview after saving them.
+
+> Firebase web configuration values are client-side identifiers, not service-account secrets. Never put a Firebase Admin SDK service-account key in Vite variables or commit one to GitHub. Firestore security rules—not hidden client configuration—protect the data.
+
+### Included Firebase modules
+
+- `src/lib/firebase.ts`: safe initialization; the UI can still build before credentials are added.
+- `src/lib/auth.ts`: Google sign-in, email/password sign-in and account creation, and sign-out helpers.
+- `src/lib/opportunities.ts`: typed listing listener plus per-user saved-opportunity helpers.
+- `firestore.rules`: public reads for published opportunities, admin-only listing writes, and owner-only user data.
+
+### Initial Firestore data shape
+
+- `opportunities/{opportunityId}`: title, organization, category, description, deadline, eligibility, source URL, application URL, verification timestamp, and status.
+- `users/{uid}`: private profile/preferences.
+- `users/{uid}/savedOpportunities/{opportunityId}`: saved listing reference and timestamp.
+
+This commit adds the Firebase foundation; it does not yet switch the dashboard's sample cards to live Firestore records or add sign-in controls to the interface. Those are the next implementation steps after a Firebase project is created and configured.
