@@ -56,3 +56,8 @@ npm run preview
 ## Project status
 
 Early development prototype. No authentication, backend persistence, or live opportunity feed is enabled yet.
+
+
+## Preview branch
+
+This branch is reserved for safe preview testing. Production remains on `main`.
