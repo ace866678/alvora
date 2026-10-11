@@ -428,7 +428,9 @@ export default function App() {
   }, [user]);
 
   const usingSamples = !remoteOpportunities || remoteOpportunities.length === 0;
-  const activeOpportunities = usingSamples ? OPPORTUNITIES : remoteOpportunities;
+  const activeOpportunities = remoteOpportunities && remoteOpportunities.length > 0
+    ? remoteOpportunities
+    : OPPORTUNITIES;
 
   const filteredOpportunities = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -788,10 +790,10 @@ export default function App() {
             ) : (
               <div className="empty-state">
                 <div className="empty-state-icon">{page === "saved" ? <Bookmark size={26} /> : <Filter size={26} />}</div>
-                <h3>{page === "saved" && savedIds.length === 0 ? "Your shortlist starts here" : "No matching opportunities"}</h3>
-                <p>{page === "saved" && savedIds.length === 0 ? "Save listings you like and they’ll appear here for easy access." : "Try a different keyword or clear your filters to see more."}</p>
-                <button type="button" className="primary-button" onClick={() => { if (page === "saved" && savedIds.length === 0) changePage("discover"); else resetFilters(); }}>
-                  {page === "saved" && savedIds.length === 0 ? "Explore opportunities" : "Clear filters"} <ArrowRight size={16} />
+                <h3>{page === "saved" && !user ? "Sign in to see your shortlist" : page === "saved" && savedIds.length === 0 ? "Your shortlist starts here" : "No matching opportunities"}</h3>
+                <p>{page === "saved" && !user ? "Your saved opportunities are linked to your account. Sign in to sync them across devices." : page === "saved" && savedIds.length === 0 ? "Save listings you like and they’ll appear here for easy access." : "Try a different keyword or clear your filters to see more."}</p>
+                <button type="button" className="primary-button" onClick={() => { if (page === "saved" && !user) openAuth("signin"); else if (page === "saved" && savedIds.length === 0) changePage("discover"); else resetFilters(); }}>
+                  {page === "saved" && !user ? "Sign in" : page === "saved" && savedIds.length === 0 ? "Explore opportunities" : "Clear filters"} <ArrowRight size={16} />
                 </button>
               </div>
             )}
